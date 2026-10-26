@@ -1,0 +1,167 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: none;
+  text-decoration: none;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: rgb(226, 226, 226);
+}
+
+.main {
+  padding: 20px;
+}
+
+.users {
+  display: flex;
+  gap: 20px;
+}
+
+.card {
+  flex: 1;
+  background: #fff;
+  text-align: center;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.card:hover {
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+  transition: 0.5s;
+}
+
+.card h4 {
+  text-transform: uppercase;
+}
+
+.card p {
+  font-size: 12px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.per span {
+  padding: 5px 15px;
+  border-radius: 10px;
+  background: rgb(223, 223, 223);
+  font-size: 20px;
+}
+
+.report-section {
+  margin-top: 20px;
+}
+
+.report-box {
+  width: 95%;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.report-box:hover {
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+  transition: 0.5s;
+}
+
+.report-box h1 {
+  margin-bottom: 20px;
+}
+
+.report-box label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.report-box textarea,
+.report-box input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.report-box textarea {
+  height: 100px;
+  resize: none;
+}
+
+.reports-list {
+  width: 95%;
+  padding: 10px;
+  margin: 12px auto 0;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+}
+
+.reports-list h1 {
+  margin-bottom: 10px;
+}
+
+.table {
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 15px;
+  min-width: 100%;
+  overflow: hidden;
+  border-radius: 5px 5px 0 0;
+}
+
+.table thead tr {
+  color: #fff;
+  background: #34af6d;
+  text-align: left;
+  font-weight: bold;
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.table tbody tr:nth-of-type(odd) {
+  background: #f3f3f3;
+}
+
+.table tbody tr:last-of-type {
+  border-bottom: 2px solid #4ad489;
+}
+
+.report-box button,
+.table button {
+  border-radius: 10px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #4ad489;
+}
+
+.report-box button {
+  margin-top: 15px;
+  padding: 10px 20px;
+}
+
+.table button {
+  padding: 6px 20px;
+}
+
+.report-box button:hover,
+.table button:hover {
+  background: #4ad489;
+  color: #fff;
+  transition: 0.5s;
+}
