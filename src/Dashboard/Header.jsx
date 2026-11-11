@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
-import { auth } from "../../firebase";
+import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
-function Header() {
+const Header = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   useEffect(() => {
@@ -14,8 +14,8 @@ function Header() {
     return () => check();
   }, []);
 
-  async function logout(e) {
-    e.preventDefault();
+  const logout = async (event) => {
+    event.preventDefault();
     try {
       await signOut(auth);
       navigate("/");

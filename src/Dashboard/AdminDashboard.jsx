@@ -1,15 +1,46 @@
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import "./AdminDashboard.css";
-import { auth } from "../../firebase";
+import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
-function AdminDashboard() {
+const API_URL = process.env.REACT_APP_API_URL;
+
+const confirmToast = (message, onConfirm) => {
+  toast(
+    (toastId) => (
+      <span>
+        {message}{" "}
+        <button
+          style={{ margin: "0 6px", padding: "4px 12px", cursor: "pointer" }}
+          onClick={() => {
+            toast.dismiss(toastId.id);
+            onConfirm();
+          }}
+        >
+          Yes
+        </button>
+        <button
+          style={{ padding: "4px 12px", cursor: "pointer" }}
+          onClick={() => toast.dismiss(toastId.id)}
+        >
+          No
+        </button>
+      </span>
+    ),
+    { duration: Infinity },
+  );
+};
+
+const AdminDashboard = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [users, setUsers] = useState([]);
   const [role, setRole] = useState("");
+
   useEffect(() => {
     const check = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -18,151 +49,119 @@ function AdminDashboard() {
         navigate("/");
       }
     });
-    return () => check();
+    return check;
     // eslint-disable-next-line
   }, []);
 
   //GET USER ROLE
-  async function getRole() {
+  const getRole = async () => {
     try {
       const user = auth.currentUser;
       if (!user) {
         return;
       }
       const token = await user.getIdToken();
-      const result = await fetch("http://localhost:5000/api/me", {
+      const result = await axios.get(`${API_URL}/api/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const answer = await result.json();
-      if (!result.ok) {
-        throw new Error(answer.message || "Could not get role");
-      }
-      setRole(answer.user.role);
-      if (answer.user.role === "user") {
+
+      const userRole = result.data.user.role;
+      setRole(result.data.user.role);
+      if (userRole === "user") {
         navigate("/dashboard");
         return;
       }
-
-      if (answer.user.role === "admin") {
+      if (userRole === "admin") {
         getReports();
       }
-      if (answer.user.role === "superadmin") {
+      if (userRole === "superadmin") {
         getUsers();
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   //GETS REPORTS DETAILS
-  async function getReports() {
+  const getReports = async () => {
     try {
       const user = auth.currentUser;
       if (!user) {
         return;
       }
       const token = await user.getIdToken();
-      const result = await fetch("http://localhost:5000/api/reports", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const answer = await result.json();
-      if (!result.ok) {
-        throw new Error(answer.message || "Could not load reports");
-      }
-      setReports(answer);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  //RECORDS USERS DATA
-  async function getUsers() {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        return;
-      }
-      const token = await user.getIdToken();
-      const result = await fetch(`http://localhost:5000/api/roles/users`, {
+      const result = await axios.get(`${API_URL}/api/reports`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const answer = await result.json();
-      if (!result.ok) {
-        throw new Error(answer.message || "Could not load users");
-      }
-      setUsers(answer);
+      setReports(result.data);
     } catch (error) {
       console.log(error);
+      toast.error("COULD NOT GET REPORTS");
     }
-  }
+  };
 
-  //CHANGE ROLES OF USERS
-  async function changeRoles(id) {
+  //RECORDS USERS DATA
+  const getUsers = async () => {
     try {
       const user = auth.currentUser;
       if (!user) {
         return;
       }
       const token = await user.getIdToken();
-      const result = await fetch(
-        `http://localhost:5000/api/roles/make-admin/${id}`,
-        {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      const answer = await result.json();
-      alert(answer.message);
-      if (!result.ok) {
+      const result = await axios.get(`${API_URL}/api/roles/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(result.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("COULD NOT GET USERS");
+    }
+  };
+
+  //CHANGE ROLES OF USERS
+  const changeRoles = async (id) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
         return;
       }
+      const token = await user.getIdToken();
+      const result = await axios.put(
+        `${API_URL}/api/roles/make-admin/${id}`,
+        null,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      toast.success(result.data.message);
       getUsers();
     } catch (error) {
       console.log(error);
-      alert("COULD NOT CHANGE ROLE");
+      toast.error(error.response?.data?.message || "COULD NOT CHANGE ROLE");
     }
-  }
+  };
 
   //DELETE REPORTS NOT NEEDED
-  async function deleteReport(id) {
-    if (!window.confirm("Delete this report?")) {
-      return;
-    }
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        return;
+  const deleteReport = async (id) => {
+    confirmToast("Delete this report?", async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          return;
+        }
+        const token = await user.getIdToken();
+        const result = await axios.delete(`${API_URL}/api/reports/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success(result.data.message);
+        getReports();
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response?.data?.message || "COULD NOT DELETE REPORT");
       }
-      const token = await user.getIdToken();
-      const result = await fetch(`http://localhost:5000/api/reports/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const answer = await result.json();
-      alert(answer.message);
-      await getReports();
-    } catch (error) {
-      console.log(error);
-      alert("COULD NOT DELETE REPORT");
-    }
-  }
+    });
+  };
   //EDIT REPORT DETAILS
-  async function editReport(report) {
-    const input = prompt(
-      "Enter status: Pending, Resolved or Unresolved",
-      report.status,
-    );
-    if (input === null) {
-      return;
-    }
-    const allowed = ["Pending", "Resolved", "Unresolved"];
-    const status = allowed.find(
-      (s) => s.toLowerCase() === input.trim().toLowerCase(),
-    );
-    if (!status) {
-      alert("Invalid status. Use Pending, Resolved or Unresolved");
+  const editReport = async (selectedReport, newStatus) => {
+    if (newStatus === selectedReport.status) {
       return;
     }
     try {
@@ -171,27 +170,25 @@ function AdminDashboard() {
         return;
       }
       const token = await user.getIdToken();
-      const result = await fetch(
-        `http://localhost:5000/api/reports/${report._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            status: status,
-          }),
-        },
+      const result = await axios.put(
+        `${API_URL}/api/reports/${selectedReport._id}`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      const answer = await result.json();
-      alert(answer.message);
-      await getReports();
+      toast.success(result.data.message);
+      getReports();
     } catch (error) {
       console.log(error);
-      alert("COULD NOT EDIT REPORT");
+      toast.error(error.response?.data?.message || "COULD NOT EDIT REPORT");
     }
-  }
+  };
+
+  const pendingReportCount = reports.filter(
+    (report) => report.status === "Pending",
+  ).length;
+  const resolvedReportCount = reports.filter(
+    (report) => report.status === "Resolved",
+  ).length;
 
   return (
     <div>
@@ -216,12 +213,7 @@ function AdminDashboard() {
                 <h4>Pending</h4>
                 <p>Reports waiting for ICT</p>
                 <div className="per">
-                  <span>
-                    {
-                      reports.filter((report) => report.status === "Pending")
-                        .length
-                    }
-                  </span>
+                  <span>{pendingReportCount}</span>
                 </div>
               </div>
 
@@ -229,12 +221,7 @@ function AdminDashboard() {
                 <h4>Resolved</h4>
                 <p>Reports fixed by ICT</p>
                 <div className="per">
-                  <span>
-                    {
-                      reports.filter((report) => report.status === "Resolved")
-                        .length
-                    }
-                  </span>
+                  <span>{resolvedReportCount}</span>
                 </div>
               </div>
             </>
@@ -275,9 +262,21 @@ function AdminDashboard() {
                     <td>{report.problem}</td>
                     <td>{report.department}</td>
                     <td>{new Date(report.submittedAt).toLocaleDateString()}</td>
-                    <td>{report.status}</td>
                     <td>
-                      <button onClick={() => editReport(report)}>Edit</button>
+                      <span className={`badge ${report.status}`}>
+                        {report.status}
+                      </span>
+                    </td>
+                    <td>
+                      <button onClick={() => editReport(report, "Pending")}>
+                        Pending
+                      </button>
+                      <button onClick={() => editReport(report, "Resolved")}>
+                        Resolved
+                      </button>
+                      <button onClick={() => editReport(report, "Unresolved")}>
+                        Unresolved
+                      </button>
                     </td>
                     <td>
                       <button onClick={() => deleteReport(report._id)}>
@@ -326,5 +325,5 @@ function AdminDashboard() {
       )}
     </div>
   );
-}
+};
 export default AdminDashboard;

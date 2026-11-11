@@ -73,7 +73,7 @@ reportRouter.put("/:id", check, admin, async (req, res) => {
         message: "NOT FOUND",
       });
     }
-      report.status = status;
+    report.status = status;
     await report.save();
     res.json({
       message: "UPDATED",

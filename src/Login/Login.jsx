@@ -12,11 +12,17 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "../../firebase";
+import { auth } from "../firebase";
+import { toast } from "react-hot-toast";
+import axios from "axios";
+
+const API_URL = process.env.REACT_APP_API_URL;
+console.log("API_URL is:", API_URL);
 
 const Login = () => {
   const navigate = useNavigate();
   const googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: "select_account"});
   const [page, setPage] = useState("Login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,7 +32,7 @@ const Login = () => {
   //SIGNUP FUNCTION
   const handleSignup = async () => {
     if (name === "" || email === "" || password === "") {
-      alert("Please fill in The Required fields");
+      toast.error("Please fill in The Required fields");
       return false;
     }
     try {
@@ -41,11 +47,11 @@ const Login = () => {
       setEmail("");
       setPassword("");
       setPage("Login");
-      alert("SUCCESSFUL");
+      toast.success("Account created successfully! Please log in.");
       return true;
     } catch (error) {
       console.log(error);
-      alert("NOT SUCCESSFUL: " + error.message);
+      toast.error("NOT SUCCESSFUL: " + error.message);
       return false;
     }
   };
@@ -53,22 +59,17 @@ const Login = () => {
   //LOGIN FUNCTION
   const handleLogin = async () => {
     if (email === "" || password === "") {
-      alert("Please fill in The Required fields");
+      toast.error("Please fill in The Required fields");
       return;
     }
     try {
       const answer = await signInWithEmailAndPassword(auth, email, password);
       const token = await answer.user.getIdToken();
-      const result = await fetch("http://localhost:5000/api/me", {
+      const result = await axios.get(`${API_URL}/api/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const response = await result.json();
-      if (!result.ok) {
-        alert(response.message || "COULD NOT LOG IN");
-        return;
-      }
-      const role = response.user.role;
-      alert("SUCCESSFUL");
+      const role = result.data.user.role;
+      toast.success("Login successful!");
       if (role === "admin" || role === "superadmin") {
         navigate("/admin");
       } else {
@@ -77,9 +78,9 @@ const Login = () => {
     } catch (error) {
       console.log(error);
       if (error.code === "auth/invalid-credential") {
-        alert("NOT SUCCESSFUL: wrong email or password");
+        toast.error("NOT SUCCESSFUL: wrong email or password");
       } else {
-        alert("NOT SUCCESSFUL: " + error.message);
+        toast.error(error.response?.data?.message || "NOT SUCCESSFUL: " + error.message);
       }
     }
   };
@@ -89,16 +90,11 @@ const Login = () => {
     try {
       const answer = await signInWithPopup(auth, googleProvider);
       const token = await answer.user.getIdToken();
-      const result = await fetch("http://localhost:5000/api/me", {
+      const result = await axios.get(`${API_URL}/api/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const response = await result.json();
-      if (!result.ok) {
-        alert(response.message || "COULD NOT LOG IN");
-        return;
-      }
-      const role = response.user.role;
-      alert("SUCCESSFUL");
+      const role = result.data.user.role;
+      toast.success("Google login successful!");
       if (role === "admin" || role === "superadmin") {
         navigate("/admin");
       } else {
@@ -106,11 +102,25 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error);
-      alert("GOOGLE SIGN-IN FAILED");
+      toast.error(error.response?.data?.message || "GOOGLE SIGN-IN FAILED");
     }
   };
+
+  
   return (
-    <div className="Login-page">
+    <div className="login-page">
+          <div className="login-left">
+      <div className="welcome">
+        <p className="welcome-small">Welcome to</p>
+        <h1>ICT Help Desk</h1>
+        <div className="welcome-line"></div>
+        <p className="welcome-sub">
+          Report problems. Track fixes. Get back to work.
+        </p>
+      </div>
+    </div>
+
+    <div className="login-right">
       <div className="Login-container">
         <div className="heading">
           <div className="text">{page}</div>
@@ -127,7 +137,7 @@ const Login = () => {
                 type="text"
                 placeholder="Name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(event) => setName(event.target.value)}
               />
             </div>
           )}
@@ -138,7 +148,7 @@ const Login = () => {
               type="email"
               placeholder="Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
             />
           </div>
 
@@ -148,7 +158,7 @@ const Login = () => {
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
             />
             <span onClick={() => setShowPassword(!showPassword)}>
               <img className="eye-icon" src={eye_icon} alt="" />
@@ -184,13 +194,13 @@ const Login = () => {
               } else {
                 handleLogin();
               }
-            }}
-          >
+            }}> 
             Login
           </div>
         </div>
       </div>
     </div>
+  </div>
   );
 };
 export default Login;

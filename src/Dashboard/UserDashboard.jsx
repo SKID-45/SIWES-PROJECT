@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import "./UserDashboard.css";
-import { auth } from "../../firebase";
+import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import axios from "axios";
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 function UserDashboard() {
   const navigate = useNavigate();
@@ -20,36 +24,32 @@ function UserDashboard() {
       }
     });
     return () => check();
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, []);
 
   //GETS REPORTS
-  async function getReports() {
+  const getReports = async () => {
     try {
       const user = auth.currentUser;
       if (!user) {
         return;
       }
       const token = await user.getIdToken();
-      const result = await fetch("http://localhost:5000/api/reports", {
+      const result = await axios.get(`${API_URL}/api/reports`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const answer = await result.json();
-      if (!result.ok) {
-        throw new Error(answer.message || "Could not load reports");
-      }
-      setReports(answer);
+      setReports(result.data);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   //SUBMITS REPORTS
-  async function submitReport() {
+  const submitReport = async () => {
     if (problem.trim() === "" || department.trim() === "") {
-      alert("PLEASE FILL IN THE REQUIRED FIELDS");
+      toast.error("PLEASE FILL IN THE REQUIRED FIELDS");
       return;
     }
     try {
@@ -58,31 +58,31 @@ function UserDashboard() {
         return;
       }
       const token = await user.getIdToken();
-      const result = await fetch("http://localhost:5000/api/reports", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const result = await axios.post(
+        `${API_URL}/api/reports`,
+        {
           problem: problem,
           department: department,
-        }),
-      });
-      const answer = await result.json();
-      alert(answer.message);
-      if (!result.ok) {
-        return;
-      }
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      toast.success(result.data.message);
       setProblem("");
       setDepartment("");
       getReports();
     } catch (error) {
       console.log(error);
-      alert("COULD NOT SUBMIT REPORT");
+      toast.error(error.response?.data?.message || "COULD NOT SUBMIT REPORT");
     }
-  }
-
+  };
+  const pendingResults = reports.filter(
+    (report) => report.status === "Pending",
+  ).length;
+  const resolvedResults = reports.filter(
+    (report) => report.status === "Resolved",
+  ).length;
   return (
     <div>
       <Header />
@@ -104,9 +104,7 @@ function UserDashboard() {
             <h4>Pending</h4>
             <p>Reports waiting for ICT</p>
             <div className="per">
-              <span>
-                {reports.filter((report) => report.status === "Pending").length}
-              </span>
+              <span>{pendingResults}</span>
             </div>
           </div>
 
@@ -114,12 +112,7 @@ function UserDashboard() {
             <h4>Resolved</h4>
             <p>Reports fixed by ICT</p>
             <div className="per">
-              <span>
-                {
-                  reports.filter((report) => report.status === "Resolved")
-                    .length
-                }
-              </span>
+              <span>{resolvedResults}</span>
             </div>
           </div>
         </div>
@@ -132,8 +125,9 @@ function UserDashboard() {
           <textarea
             id="problem"
             placeholder="Describe Your Problem"
+            maxLength={1000}
             value={problem}
-            onChange={(e) => setProblem(e.target.value)}
+            onChange={(event) => setProblem(event.target.value)}
           ></textarea>
 
           <label>DEPARTMENT</label>
@@ -141,8 +135,9 @@ function UserDashboard() {
             type="text"
             id="department"
             placeholder="Enter Your Department"
+            maxLength={100}
             value={department}
-            onChange={(e) => setDepartment(e.target.value)}
+            onChange={(event) => setDepartment(event.target.value)}
           />
           <button onClick={submitReport}>Submit Report</button>
         </div>
@@ -166,7 +161,11 @@ function UserDashboard() {
                   <td>{report.problem}</td>
                   <td>{report.department}</td>
                   <td>{new Date(report.submittedAt).toLocaleDateString()}</td>
-                  <td>{report.status}</td>
+                  <td>
+                    <span className={`badge ${report.status}`}>
+                      {report.status}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>
