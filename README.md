@@ -33,7 +33,6 @@ cd SIWES-PROJECT
 bash
 npm install
 
-
 ### 4. Start the application
 bash
 npm start
