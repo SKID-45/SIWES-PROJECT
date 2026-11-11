@@ -1,70 +1,73 @@
-# Getting Started with Create React App
+HELP-DESK SYSTEM
+ABOUT
+The Help Desk System is a web application developed to help users report technical problems and allow administrators to manage reported issues. This project was developed as part of my Student Industrial Work Experience Scheme (SIWES), the aim is to make reporting and managing IT-related problems easier and more organized.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+PROJECT FEATURES
+User login page.
+User dashboard.
+Admin dashboard.
+Submission of technical problems and complaints.
+Management of reported issues.
+Simple and user-friendly interface.
+Technologies Used
 
-## Available Scripts
+TECHNOLOGIES USED
+React.js – For building the frontend.
+JavaScript – For adding functionality to the application.
+CSS – For styling the application.
+Node.js – For the backend.
+Axios – For sending requests to the backend.
+Firebase – For application integration.
+Git and GitHub – For managing and storing the project.
 
-In the project directory, you can run:
+PROJECT FOLDER STRUCTURE
+SIWES-PROJECT/
+│
+├── Backend/
+│   ├── models/
+│   ├── routes/
+│   └── server.js
+│
+├── public/
+│
+├── src/
+│   ├── Dashboard/
+│   ├── Login/
+│   ├── assets/
+│   ├── App.js
+│   └── config.js
+│
+├── package.json
+├── package-lock.json
+└── README.md
 
-### `npm start`
+HOW TO RUN IT
+Follow these steps to run the project on your computer.
+1. Clone the Repository
+git clone https://github.com/SKID-45/SIWES-PROJECT.git
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+2. Enter the Project Folder
+cd SIWES-PROJECT
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+3. Install Dependencies
+npm install
 
-### `npm test`
+4. Start the Application
+npm start
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The application should open in your browser at:
+http://localhost:3000
+Note: Make sure the backend is properly configured and running for features that depend on it.
 
-### `npm run build`
+AIM OF THE PROJECT
+The aim of this project is to create a platform where users can report technical issues and administrators can manage those issues without having to handle everything manually.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+PROJECT INFORMATION
+Project Title: Help Desk Management System
+Programme: Student Industrial Work Experience Scheme (SIWES)
+Project Type: Web Application
+GitHub Username: AYELAGBE SIJU MATHEW
+GitHub Repository
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+CONCLUSION
+Working on this project has helped me improve my knowledge of web development, frontend and backend programming, and the use of GitHub for managing projects. It has also given me practical experience in developing a web application to solve a real-life problem.
