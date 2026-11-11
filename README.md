@@ -22,19 +22,15 @@ The Help Desk System is a web application developed to help users report technic
 
 ## HOW TO RUN IT
 ### 1. Clone the repository
-bash
 git clone https://github.com/SKID-45/SIWES-PROJECT.git
 
 ### 2. Enter the project folder
-bash
 cd SIWES-PROJECT
 
 ### 3. Install dependencies
-bash
 npm install
 
 ### 4. Start the application
-bash
 npm start
 
 The application should open at http://localhost:3000.
